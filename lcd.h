@@ -2,15 +2,11 @@
 #define RS 1<<10
 #define E  1<<11
 
-unsigned char*temp;
-unsigned char i;
-
 void INIT(void);
 void COMMAND(unsigned char);
 void DATA(unsigned char);
 void str(unsigned char*);
 void lcd_str(unsigned char*);
-void integer(int);
 void delay(int);
 
 void INIT(void)
@@ -52,22 +48,5 @@ void lcd_str(unsigned char *s)
 		DATA(*s++);
 }
 
-void integer(int n)
-{
-	int a[6],i;
-	if(n==0)
-		DATA('0');
-	else
-	{
-		if(n<0){
-			DATA('-');
-			n=-n;
-		}
-		for(i=0;n!=0;n/=10)
-			a[i++]=n%10;
-		for(i=i-1;i>=0;i++)
-			DATA(a[i]+48);
-	}
-}
 
 
