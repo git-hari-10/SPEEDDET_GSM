@@ -48,15 +48,15 @@ int main()
   PINSEL1 |= 0x00000001;       
   PINSEL0 |= 0x20000000;
 	
-	VICIntSelect = 0;         
+  VICIntSelect = 0;         
 
   VICVectCntl0 = (0x20)|14;   
-	VICVectAddr0 = (unsigned long)START_isr;
+  VICVectAddr0 = (unsigned long)START_isr;
 
   VICVectCntl1 = (0x20)|15;  
   VICVectAddr1 = (unsigned long)STOP_isr;
 	
-	EXTMODE  = 0x03;          
+  EXTMODE  = 0x03;          
   EXTPOLAR = 0x00; 
 
   VICIntEnable = (1<<14)|(1<<15);
