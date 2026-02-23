@@ -10,6 +10,7 @@ void COMMAND(unsigned char);
 void DATA(unsigned char);
 void str(unsigned char*);
 void lcd_str(unsigned char*);
+void integer(int);
 void delay(int);
 
 void INIT(void)
@@ -40,29 +41,10 @@ void DATA(unsigned char DATA)
 }
 void delay(int ms)
 {
-	/*T0PR=15000-1;
-	T0TCR=0X01;
-	while(T0TC<ms);
-	T0TCR=0X03;
-	T0TCR=0X00;*/
 	int i;
 	for(;ms>=0;ms--)
 		for(i=12000;i>=0;i--);
 }
-
-/*void str(unsigned char*s)
-{
-	i=0X8F;
-	while(i>=0X80)
-	{
-	  delay(200);
-	  COMMAND(0X01);
-		COMMAND(i--);
-		temp=s; 
-		while(*temp)
-			DATA(*temp++);
-	}
-}*/
 
 void lcd_str(unsigned char *s)
 {
@@ -70,5 +52,22 @@ void lcd_str(unsigned char *s)
 		DATA(*s++);
 }
 
+void integer(int n)
+{
+	int a[6],i;
+	if(n==0)
+		DATA('0');
+	else
+	{
+		if(n<0){
+			DATA('-');
+			n=-n;
+		}
+		for(i=0;n!=0;n/=10)
+			a[i++]=n%10;
+		for(i=i-1;i>=0;i++)
+			DATA(a[i]+48);
+	}
+}
 
 

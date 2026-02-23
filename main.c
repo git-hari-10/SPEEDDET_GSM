@@ -1,27 +1,38 @@
-#include<lpc21xx.h>
+#include <lpc21xx.h>
 #include "lcd.h"
 #include "uart.h"
 #define BUZZER 1<<12 
 
-int S = 0, T = 0, Dt = 20;
+volatile unsigned long S  = 0;
+volatile unsigned long T  = 0;
+volatile unsigned long Dt = 20;
+unsigned char flag = 0;
 unsigned char detected = 0;
 
 void START_isr(void) __irq
 {
-    EXTINT = 0x01;        
-    T0PR   = 15000-1;
-    T0TCR  = 0x01;         
-    VICVectAddr = 0;
+    EXTINT = 0x01;	
+		if(flag==0)
+		{
+			T0PR   = 15000-1;
+			T0TCR  = 0x01;
+			flag = 1;
+		}			
+		VICVectAddr = 0;
 }
 
 void STOP_isr(void) __irq
 {
-    EXTINT = 0x02;        
-    T = T0TC;	
-		T0TCR = 0x03;
-    T0TCR = 0x00;
-		S = (Dt * 1000) / T;
-		detected = 1;
+    EXTINT = 0x02; 
+		if(flag==1)
+		{
+			T = T0TC;	
+			T0TCR = 0x03;
+			T0TCR = 0x00;
+			S = (Dt * 1000) / T;
+			detected = 1;
+			flag = 0;
+		}
     VICVectAddr = 0;
 }
 
@@ -58,41 +69,52 @@ int main()
 			COMMAND(0x01);
 			if(S > 40) 
 			{
-				COMMAND(0x80);
-				lcd_str("OVERSPEED");
-				COMMAND(0xC0);
-				lcd_str("DETECTED");
+				COMMAND(0x80);lcd_str(" *-*-*-*-*-*-*-*-*-*");
+				COMMAND(0xC0);lcd_str("      OVERSPEED     ");
+				COMMAND(0x94);lcd_str("    SPEED:");
+				DATA((S/10)+'0');
+				DATA((S%10)+'0');
+				lcd_str("cm/s");
+				COMMAND(0xD4);lcd_str(" *-*-*-*-*-*-*-*-*-*");
 				IOSET0 = BUZZER;
+				
+				/*             GSM-INTERFACE             */
 				TXSTR("AT\r");
 				delay(500);
 				TXSTR("AT+CMGF=1\r");
 				delay(500);
 				TXSTR("AT+CMGS=\"8489593859\"\r");
 				delay(500);
-				TXSTR("OVERSPEED DETECTED");
+				TXSTR("OVERSPEED DETECTED\r");
+				delay(500);
+				TX((S/10)+'0');
+				TX((S%10)+'0');
+				TXSTR("cm/s");
 				delay(500);
 				TX(0x1A);
 				delay(500);
+				
 				IOCLR0 = BUZZER;
 			}
 			else
 			{
-				COMMAND(0x80);
-				lcd_str("SPEED NORMAL");
+				COMMAND(0x80);lcd_str(" *-*-*-*-*-*-*-*-*-*");
+				COMMAND(0xC0);lcd_str("    NORMAL SPEED    ");
+				COMMAND(0x94);lcd_str("    SPEED:");
+				DATA((S/10)+'0');
+				DATA((S%10)+'0');
+				lcd_str("cm/s");
+				COMMAND(0xD4);lcd_str(" *-*-*-*-*-*-*-*-*-*");
 				IOCLR0 = BUZZER;
 			}
-			delay(2000);
+			delay(3000);
 		}
 		else
 		{
-		  /*str("PROJECT TOPIC:");
-			str("INTELLIGENT OVER");
-			str("SPEED DETECTION");
-			str("USING ARM & GSM");*/
-			COMMAND(0x80);
-			lcd_str("|  PROJ  TOPIC |");
-			COMMAND(0xC0);
-			lcd_str("OVERSPEED SYSTEM");
+			COMMAND(0x80);lcd_str("     INTELLIGENT    ");
+			COMMAND(0xC0);lcd_str("OVERSPEED  DETECTION");
+			COMMAND(0x94);lcd_str("       SYSTEM       ");
+			COMMAND(0xD4);lcd_str("    LPC2129 & GSM   ");
 		} 
 	}	
 }

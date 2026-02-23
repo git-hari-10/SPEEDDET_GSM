@@ -11,7 +11,7 @@
 ### ADS-LD Output File: 'overspeed.axf'
 ### ADS-LD Command File: 'overspeed.lnp'
 ### Checking for dirty Components...
-### Creating CmdFile 'overspeed.lnp', Handle=0x000012E8
+### Creating CmdFile 'overspeed.lnp', Handle=0x00001024
 ### Writing '.lnp' file
 ### ADS-LD Command file 'overspeed.lnp' is ready.
 ### ADS-LD: About to start ADS-LD Thread.
