@@ -3,9 +3,9 @@
 #include "uart.h"
 #define BUZZER 1<<12 
 
-volatile unsigned long S  = 0;
-volatile unsigned long T  = 0;
-volatile unsigned long Dt = 20;
+int S  = 0;
+int T  = 0;
+int Dt = 20;
 unsigned char flag = 0;
 unsigned char detected = 0;
 
